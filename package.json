@@ -1,0 +1,50 @@
+{
+  "name": "dgm-todo",
+  "private": true,
+  "version": "0.0.0",
+  "description": "A boilerplate for an app/api using reflux and swaggerize",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "jshint": "jshint --reporter node_modules/jshint-stylish index.js app.js routes/** config/**",
+    "check-cov": "istanbul check-coverage",
+    "test": "istanbul cover _mocha",
+    "posttest": "npm run check-cov; npm run jshint;"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dgm-ria-fall-2015/dgm-todo.git"
+  },
+  "author": "ksmithut",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dgm-ria-fall-2015/dgm-todo/issues"
+  },
+  "homepage": "https://github.com/dgm-ria-fall-2015/dgm-todo",
+  "dependencies": {
+    "babel": "^5.8.23",
+    "body-parser": "^1.14.0",
+    "compression": "^1.5.2",
+    "config": "^1.16.0",
+    "connect-redis": "^2.5.1",
+    "cookie-parser": "^1.4.0",
+    "cors": "^2.7.1",
+    "csurf": "^1.8.3",
+    "express": "^4.13.3",
+    "express-session": "^1.11.3",
+    "hyperbole": "^1.0.0",
+    "mongoose": "^4.1.8",
+    "trailblazer": "^2.0.0"
+  },
+  "devDependencies": {
+    "chai": "^3.2.0",
+    "chai-as-promised": "^5.1.0",
+    "istanbul": "^0.3.20",
+    "jshint": "^2.8.0",
+    "jshint-stylish": "^2.0.1",
+    "mocha": "^2.3.3",
+    "mocha-lcov-reporter": "^1.0.0",
+    "supertest": "^1.1.0",
+    "supertest-as-promised": "^2.0.2"
+  }
+}

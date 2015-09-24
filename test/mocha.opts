@@ -1,0 +1,4 @@
+test/*.js
+--require babel/register
+--require test/helpers/chai
+--reporter spec

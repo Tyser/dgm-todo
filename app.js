@@ -1,10 +1,9 @@
 'use strict';
 
-import path from 'path';
 import express from 'express';
 import Server from 'hyperbole';
 import config from 'config';
-import {name as packageName} from './package';
+import redisUrl from 'redis-url';
 
 // Middleware
 import cors from 'cors';
@@ -15,7 +14,10 @@ import connectRedis from 'connect-redis';
 import csurf from 'csurf';
 import trailblazer from 'trailblazer';
 
+const SECURE_SESSIONS = config.get('session.secure');
 const PORT = config.get('port');
+const NAME = config.get('name');
+const REDIS = redisUrl.parse(config.get('redis.url'));
 
 let RedisStore = connectRedis(session);
 let trailblaze = trailblazer('routes', {
@@ -26,9 +28,12 @@ let trailblaze = trailblazer('routes', {
 export let app = express();
 export let server = new Server(app, PORT);
 
+// app settings
 app.disable('x-powered-by');
 app.set('json spaces', 2);
+app.set('trust proxy', SECURE_SESSIONS);
 
+// Middleware initialization
 app.use(cors());
 app.use(compression());
 app.use(json());
@@ -36,17 +41,24 @@ app.use(session({
   cookie: {
     path: '/',
     httpOnly: true,
-    secure: false,
-    maxAge: 1 * 24 * 60 * 60 * 1000 // 1 day
+    secure: SECURE_SESSIONS,
+    maxAge: 1 * 24 * 60 * 60 * 1000 // 1 day in milliseconds
   },
-  name: `${packageName}.sid`,
+  name: `${NAME}.sid`,
   proxy: true,
   saveUninitialized: false,
   resave: false,
-  secret: config.get('sessionSecret'),
-  store: new RedisStore(config.get('redis'))
+  secret: config.get('session.secret'),
+  store: new RedisStore({
+    host: REDIS.hostname,
+    port: REDIS.port,
+    ttl: 1 * 24 * 60 * 60, // 1 day in seconds
+    db: parseInt(REDIS.database, 10) || 0,
+    pass: REDIS.password,
+    prefix: `${NAME}:`
+  })
 }));
-
+app.use(csurf());
 app.use(urlencoded({extended: true}));
 app.use(trailblaze.routes());
 

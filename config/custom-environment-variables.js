@@ -1,11 +1,17 @@
 'use strict';
 
 module.exports = {
+  name: 'PACKAGE_NAME',
   env: 'NODE_ENV',
   port: 'PORT',
-  sessionSecret: 'SESSION_SECRET',
+  session: {
+    secret: 'SESSION_SECRET',
+    secure: 'SESSION_SECURE'
+  },
   redis: {
-    host: 'REDIS_HOST',
-    port: 'REDIS_PORT'
+    url: 'REDIS_URL'
+  },
+  mongo: {
+    url: 'MONGOLAB_URI'
   }
 };

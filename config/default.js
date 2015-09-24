@@ -1,11 +1,19 @@
 'use strict';
 
+var packageName = require('../package').name;
+
 module.exports = {
+  name: packageName,
   env: 'development',
   port: 8000,
-  sessionSecret: 'changeme',
+  session: {
+    secret: 'changeme',
+    secure: false
+  },
   redis: {
-    host: '127.0.0.1',
-    port: 6379
+    url: 'redis://127.0.0.1:6379'
+  },
+  mongo: {
+    url: 'mongodb://127.0.0.1:27017'
   }
 };

@@ -5,6 +5,8 @@ import Server from 'hyperbole';
 import config from 'config';
 import redisUrl from 'redis-url';
 
+import initDatabase from './init/database';
+
 // Middleware
 import cors from 'cors';
 import {json, urlencoded} from 'body-parser';
@@ -62,6 +64,10 @@ app.use(csurf());
 app.use(urlencoded({extended: true}));
 app.use(trailblaze.routes());
 
+initDatabase(config.get('mongo.url'))
+  .then(() => console.log('Connected to database'))
+  .catch((err) => console.error('Error connecting to databse:', err.stack));
+
 export default server.start()
   .then(() => console.log(`Server started on port ${PORT}`))
-  .catch((err) => console.error(err.stack));
+  .catch((err) => console.error('Error starting server:', err.stack));

@@ -1,4 +1,4 @@
-test/*.js
+test/*.js lib/**/test.js
 --require babel/register
 --require test/helpers/chai
 --reporter spec

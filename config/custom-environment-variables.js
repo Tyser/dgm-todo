@@ -12,7 +12,7 @@ module.exports = {
     url: 'REDIS_URL'
   },
   mongo: {
-    url: 'MONGOLAB_URI'
+    url: 'MONGO_URL'
   },
   user: {
     saltWorkFactor: 'ACCOUNT_SALE_WORK_FACTOR',

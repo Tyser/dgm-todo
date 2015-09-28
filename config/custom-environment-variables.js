@@ -13,5 +13,10 @@ module.exports = {
   },
   mongo: {
     url: 'MONGOLAB_URI'
+  },
+  user: {
+    saltWorkFactor: 'ACCOUNT_SALE_WORK_FACTOR',
+    maxLoginAttempts: 'ACOUNT_MAX_LOGIN_ATTEMPTS',
+    lockTime: 'ACCOUNT_LOCK_TIME'
   }
 };

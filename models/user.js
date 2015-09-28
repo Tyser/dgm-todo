@@ -2,6 +2,7 @@
 
 import mongoose, {Schema} from 'mongoose';
 import validate from 'mongoose-validator';
+import config from 'config';
 import CustomError from '../lib/custom-error';
 
 // Plugins
@@ -38,15 +39,15 @@ let User = new Schema({
 User.plugin(mongoosePassword, {
   path: 'password',
   auth: 'authenticate',
-  workFactor: 10
+  workFactor: config.get('user.saltWorkFactor')
 });
 User.plugin(mongooseLock, {
   attemptsPath: 'attempts',
   lockUntilPath: 'lockUntil',
   isLockedPath: 'isLocked',
   incMethod: 'incAttempts',
-  maxAttempts: 3,
-  lockTime: 1 * 60 * 60 * 1000 // 1 hour
+  maxAttempts: config.get('user.maxLoginAttempts'),
+  lockTime: config.get('user.lockTime')
 });
 User.plugin(mongooseCreatedAt, {
   path: 'createdAt'
@@ -60,7 +61,7 @@ User.plugin(mongooseUpdatedAt, {
  * @param {String} email
  * @param {String} password
  */
-User.static('authenticate', (email = '', password = '') => {
+User.static('authenticate', function (email = '', password = '') {
   let user;
   return this.findOne({email})
     .then((foundUser) => {

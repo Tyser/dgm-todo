@@ -16,9 +16,16 @@ describe('models/user', () => {
   before(() => User
     .create({
       email: 'test@email.com',
-      password: '1234567890'
+      password: '1234567890',
+      role: 'admin'
     })
-    .then((newUser) => user = newUser)
+    .then(
+      (newUser) => user = newUser,
+      (err) => {
+        console.log(err);
+        throw err;
+      }
+    )
   );
 
   after(() => User

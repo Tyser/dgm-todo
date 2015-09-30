@@ -1,5 +1,6 @@
 'use strict';
 
+import Promise from 'bluebird';
 import mongoose, {Schema} from 'mongoose';
 import validate from 'mongoose-validator';
 import config from 'config';
@@ -24,7 +25,7 @@ export class IncorrectPasswordError extends CustomError {
 }
 
 // Schema Definition
-let User = new Schema({
+let UserSchema = new Schema({
   email: {
     type: String,
     required: true,
@@ -37,12 +38,12 @@ let User = new Schema({
 });
 
 // Plugin configuration
-User.plugin(mongoosePassword, {
+UserSchema.plugin(mongoosePassword, {
   path: 'password',
   auth: 'authenticate',
   workFactor: config.get('user.saltWorkFactor')
 });
-User.plugin(mongooseLock, {
+UserSchema.plugin(mongooseLock, {
   attemptsPath: 'attempts',
   lockUntilPath: 'lockUntil',
   isLockedPath: 'isLocked',
@@ -50,7 +51,7 @@ User.plugin(mongooseLock, {
   maxAttempts: config.get('user.maxLoginAttempts'),
   lockTime: config.get('user.lockTime')
 });
-User.plugin(mongooseRole, {
+UserSchema.plugin(mongooseRole, {
   roles: [
     'admin',
     'member'
@@ -65,10 +66,10 @@ User.plugin(mongooseRole, {
   hasHaccessMethod: 'hasAccess',
   roleHasAccessMethod: 'roleHasAccess'
 });
-User.plugin(mongooseCreatedAt, {
+UserSchema.plugin(mongooseCreatedAt, {
   path: 'createdAt'
 });
-User.plugin(mongooseUpdatedAt, {
+UserSchema.plugin(mongooseUpdatedAt, {
   path: 'updatedAt'
 });
 
@@ -77,7 +78,7 @@ User.plugin(mongooseUpdatedAt, {
  * @param {String} email
  * @param {String} password
  */
-User.static('authenticate', function (email = '', password = '') {
+UserSchema.static('authenticate', function (email = '', password = '') {
   let user;
   return this.findOne({email})
     .then((foundUser) => {
@@ -96,4 +97,8 @@ User.static('authenticate', function (email = '', password = '') {
     });
 });
 
-export default mongoose.model('User', User);
+let User = mongoose.model('User', UserSchema);
+Promise.promisifyAll(User);
+Promise.promisifyAll(User.prototype);
+
+export default User;

@@ -4,8 +4,7 @@ import express from 'express';
 import Server from 'hyperbole';
 import config from 'config';
 import redisUrl from 'redis-url';
-
-import initDatabase from './init/database';
+import mongoose from 'mongoose';
 
 // Middleware
 import cors from 'cors';
@@ -15,6 +14,7 @@ import session from 'express-session';
 import connectRedis from 'connect-redis';
 import csurf from 'csurf';
 import trailblazer from 'trailblazer';
+import auth from './middleware/auth';
 
 const SECURE_SESSIONS = config.get('session.secure');
 const PORT = config.get('port');
@@ -60,13 +60,12 @@ app.use(session({
     prefix: `${NAME}:`
   })
 }));
+app.use(auth());
 app.use(csurf());
 app.use(urlencoded({extended: true}));
 app.use(trailblaze.routes());
 
-initDatabase(config.get('mongo.url'))
-  .then(() => console.log('Connected to database'))
-  .catch((err) => console.error('Error connecting to databse:', err.stack));
+mongoose.connect(config.get('mongo.url'));
 
 export default server.start()
   .then(() => console.log(`Server started on port ${PORT}`))

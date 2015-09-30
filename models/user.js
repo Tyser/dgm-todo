@@ -10,6 +10,7 @@ import mongoosePassword from '../lib/mongoose-password';
 import mongooseCreatedAt from '../lib/mongoose-created-at';
 import mongooseUpdatedAt from '../lib/mongoose-updated-at';
 import mongooseLock from '../lib/mongoose-lock';
+import mongooseRole from '../lib/mongoose-role';
 
 // Custom Errors
 export class UserNotFoundError extends CustomError {
@@ -48,6 +49,21 @@ User.plugin(mongooseLock, {
   incMethod: 'incAttempts',
   maxAttempts: config.get('user.maxLoginAttempts'),
   lockTime: config.get('user.lockTime')
+});
+User.plugin(mongooseRole, {
+  roles: [
+    'admin',
+    'member'
+  ],
+  accessLevels: {
+    'authenticated': ['admin', 'member'],
+    'admin': ['admin']
+  },
+  rolePath: 'role',
+  roleStaticPath: 'roles',
+  accessLevelStaticPath: 'accessLevels',
+  hasHaccessMethod: 'hasAccess',
+  roleHasAccessMethod: 'roleHasAccess'
 });
 User.plugin(mongooseCreatedAt, {
   path: 'createdAt'

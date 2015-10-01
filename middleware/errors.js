@@ -13,9 +13,13 @@ export function errors() {
   return (err, req, res, next) => {
     err.status = err.status || 500;
 
-    res.status(err.status || 500);
+    switch (err.name) {
+      case 'AuthenticationError':
+        err.status = 401;
+        err.message = 'Username or password is incorrect';
+    }
 
-    console.log(err);
+    res.status(err.status);
 
     res.json({
       code: err.status,

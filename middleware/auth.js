@@ -37,7 +37,7 @@ passport.use(new LocalStrategy(
       .catch(UserNotFoundError, IncorrectPasswordError, () => {
         throw new IncorrectCredentialsError('Incorrect Credentials');
       })
-      .nodeify(done);
+      .then(done.bind(null, null), done);
   })
 );
 
@@ -46,7 +46,9 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-  User.findById(id).nodeify(done);
+  User
+    .findById(id)
+    .then(done.bind(null, null), done);
 });
 
 export default () => ([

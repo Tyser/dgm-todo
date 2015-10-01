@@ -24,6 +24,9 @@ export let route = {
   put: [
     isSelf,
     (req, res, next) => {
+      if (req.user.role !== 'admin') {
+        delete req.body.role;
+      }
       User
         .findByIdAndUpdate(req.params.id, req.body)
         .then(notFound('User was not found'))
@@ -35,7 +38,7 @@ export let route = {
   ],
 
   delete: [
-    isSelf,
+    authorize('admin'),
     (req, res, next) => {
       User
         .findByIdAndRemove(req.params.id)

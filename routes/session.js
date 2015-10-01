@@ -24,10 +24,9 @@ export let route = {
   ],
 
   delete: [
-    authenticate(),
     (req, res) => {
       req.logout();
-      res.status(204);
+      res.sendStatus(204);
     }
   ]
 

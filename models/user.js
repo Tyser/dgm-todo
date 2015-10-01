@@ -30,6 +30,7 @@ let UserSchema = new Schema({
     type: String,
     required: true,
     index: true,
+    unique: true,
     validate: [
       validate({
         validator: 'isEmail'
@@ -78,10 +79,28 @@ UserSchema.plugin(mongooseUpdatedAt, {
  * @function User#toJSON
  * @return {Object}
  */
+const PUBLIC_FIELDS = [
+  'email',
+  'role',
+  'createdAt',
+  'updatedAt'
+];
 UserSchema.method('toJSON', function () {
-  let user = this.toObject();
-  delete user.password;
-  return user;
+  let obj = this.toObject();
+  return PUBLIC_FIELDS.reduce((user, field) => {
+    user[field] = obj[field];
+    return user;
+  }, {});
+});
+
+/**
+ * @function User.clean
+ * @param {User} editingUser - The editing user
+ * @param {Object}
+ * @return {Object}
+ */
+UserSchema.static('clean', function (editingUser) {
+
 });
 
 /**

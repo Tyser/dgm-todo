@@ -19,6 +19,9 @@ export let route = {
 
   post: [
     (req, res, next) => {
+      if (!req.user || req.user.role !== 'admin') {
+        delete req.body.role;
+      }
       User
         .create(req.body)
         .then((user) => {

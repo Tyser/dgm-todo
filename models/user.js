@@ -29,6 +29,7 @@ let UserSchema = new Schema({
   email: {
     type: String,
     required: true,
+    index: true,
     validate: [
       validate({
         validator: 'isEmail'
@@ -74,9 +75,20 @@ UserSchema.plugin(mongooseUpdatedAt, {
 });
 
 /**
+ * @function User#toJSON
+ * @return {Object}
+ */
+UserSchema.method('toJSON', function () {
+  let user = this.toObject();
+  delete user.password;
+  return user;
+});
+
+/**
  * @function User.authenticate
  * @param {String} email
  * @param {String} password
+ * @param {Promise}
  */
 UserSchema.static('authenticate', function (email = '', password = '') {
   let user;

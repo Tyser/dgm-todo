@@ -20,16 +20,26 @@ export class ForbiddenError extends CustomError {
   constructor(message) { super(message, 403); }
 }
 
-passport.use(new LocalStrategy((email, password, done) => {
-  User
-    .authenticate(email, password)
-    // We catch these two so the user doesn't know if they entered their email
-    // in wrong or their password in wrong.
-    .catch(UserNotFoundError, IncorrectPasswordError, () => {
-      throw new IncorrectCredentialsError('Incorrect Credentials');
-    })
-    .nodeify(done);
-}));
+export class SessionNotFound extends CustomError {
+  constructor(message) { super(message, 404); }
+}
+
+passport.use(new LocalStrategy(
+  {
+    usernameField: 'email',
+    passwordField: 'password'
+  },
+  (email, password, done) => {
+    User
+      .authenticate(email, password)
+      // We catch these two so the user doesn't know if they entered their email
+      // in wrong or their password in wrong.
+      .catch(UserNotFoundError, IncorrectPasswordError, () => {
+        throw new IncorrectCredentialsError('Incorrect Credentials');
+      })
+      .nodeify(done);
+  })
+);
 
 passport.serializeUser((user, done) => {
   done(null, user.id);
@@ -44,14 +54,20 @@ export default () => ([
   passport.session()
 ]);
 
-export function acl(accessLevel) {
+export function authenticate(options) {
+  return passport.authenticate('local', Object.assign({
+    failWithError: true
+  }, options));
+}
+
+export function authorize(accessLevel, checkCriteria = () => true) {
   return (req, res, next) => {
     if (!req.user) {
       return next(
         new UnauthorizedError('You must be logged in to access this endpoint')
       );
     }
-    if (!req.user.hasAccess(accessLevel)) {
+    if (!req.user.hasAccess(accessLevel) || !checkCriteria(req)) {
       return next(
         new ForbiddenError('You do not have permission to access this endpoint')
       );

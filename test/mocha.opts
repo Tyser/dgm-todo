@@ -1,4 +1,4 @@
-test/*.js test/models/*.js lib/**/test.js
+test/*.js test/models/*.js test/routes/*.js lib/**/test.js
 --require index
 --require test/helpers/chai
 --reporter spec

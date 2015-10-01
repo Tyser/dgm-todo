@@ -12,19 +12,24 @@ import {json, urlencoded} from 'body-parser';
 import compression from 'compression';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
-import csurf from 'csurf';
 import trailblazer from 'trailblazer';
 import auth from './middleware/auth';
+import {notFound, errors} from './middleware/errors';
 
 const SECURE_SESSIONS = config.get('session.secure');
 const PORT = config.get('port');
 const NAME = config.get('name');
-const REDIS = redisUrl.parse(config.get('redis.url'));
+const SESSION_EXPIRE_SECONDS = 1 * 24 * 60 * 60; // 1 day
+const {
+  hostname: REDIS_HOST,
+  port: REDIS_PORT,
+  database: REDIS_DB,
+  password: REDIS_PASS
+} = redisUrl.parse(config.get('redis.url'));
 
 let RedisStore = connectRedis(session);
 let trailblaze = trailblazer('routes', {
-  cwd: __dirname,
-  index: true
+  cwd: __dirname
 });
 
 export let app = express();
@@ -44,7 +49,7 @@ app.use(session({
     path: '/',
     httpOnly: true,
     secure: SECURE_SESSIONS,
-    maxAge: 1 * 24 * 60 * 60 * 1000 // 1 day in milliseconds
+    maxAge: SESSION_EXPIRE_SECONDS * 1000
   },
   name: `${NAME}.sid`,
   proxy: true,
@@ -52,18 +57,19 @@ app.use(session({
   resave: false,
   secret: config.get('session.secret'),
   store: new RedisStore({
-    host: REDIS.hostname,
-    port: REDIS.port,
-    ttl: 1 * 24 * 60 * 60, // 1 day in seconds
-    db: parseInt(REDIS.database, 10) || 0,
-    pass: REDIS.password,
+    host: REDIS_HOST,
+    port: REDIS_PORT,
+    ttl: SESSION_EXPIRE_SECONDS, // 1 day in seconds
+    db: parseInt(REDIS_DB, 10) || 0,
+    pass: REDIS_PASS,
     prefix: `${NAME}:`
   })
 }));
 app.use(auth());
-app.use(csurf());
 app.use(urlencoded({extended: true}));
 app.use(trailblaze.routes());
+app.use(notFound());
+app.use(errors());
 
 mongoose.connect(config.get('mongo.url'));
 

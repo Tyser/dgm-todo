@@ -15,7 +15,7 @@ module.exports = {
     url: 'MONGO_URL'
   },
   user: {
-    saltWorkFactor: 'ACCOUNT_SALE_WORK_FACTOR',
+    saltWorkFactor: 'ACCOUNT_SALT_WORK_FACTOR',
     maxLoginAttempts: 'ACOUNT_MAX_LOGIN_ATTEMPTS',
     lockTime: 'ACCOUNT_LOCK_TIME'
   }

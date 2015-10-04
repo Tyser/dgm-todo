@@ -3,6 +3,10 @@
 import passport from 'passport';
 import {Strategy as LocalStrategy} from 'passport-local';
 import CustomError from '../lib/custom-error';
+import {
+  UnauthorizedError,
+  ForbiddenError
+} from '../lib/errors';
 import User, {
   UserNotFoundError,
   IncorrectPasswordError
@@ -10,14 +14,6 @@ import User, {
 
 export class IncorrectCredentialsError extends CustomError {
   constructor(message) { super(message, 401); }
-}
-
-export class UnauthorizedError extends CustomError {
-  constructor(message) { super(message, 401); }
-}
-
-export class ForbiddenError extends CustomError {
-  constructor(message) { super(message, 403); }
 }
 
 export class SessionNotFound extends CustomError {
@@ -62,14 +58,14 @@ export function authenticate(options) {
   }, options));
 }
 
-export function authorize(accessLevel, checkCriteria = () => true) {
+export function authorize(accessLevel, checkCriteria = () => false) {
   return (req, res, next) => {
     if (!req.user) {
       return next(
         new UnauthorizedError('You must be logged in to access this endpoint')
       );
     }
-    if (!req.user.hasAccess(accessLevel) || !checkCriteria(req)) {
+    if (!req.user.hasAccess(accessLevel) && !checkCriteria(req)) {
       return next(
         new ForbiddenError('You do not have permission to access this endpoint')
       );

@@ -2,43 +2,23 @@
 /* jshint maxlen: false */
 
 import Promise from 'bluebird';
+import {expect} from 'chai';
+import {user, initUser} from '../helpers/auth';
 import User, {
   UserNotFoundError,
   AccountLockedError,
   IncorrectPasswordError
 } from '../../models/user';
-import {expect} from 'chai';
 
 describe('models/user', () => {
 
-  let user;
-
-  before(() => User
-    .create({
-      email: 'test@email.com',
-      password: '1234567890',
-      role: 'admin'
-    })
-    .then(
-      (newUser) => user = newUser,
-      (err) => {
-        console.log(err);
-        throw err;
-      }
-    )
-  );
-
-  after(() => User
-    .findOneAndRemove({
-      email: 'test@email.com'
-    })
-  );
+  before(() => initUser());
 
   describe('User.authenticate(email, password)', () => {
 
     it('should authenticate user', () => {
       return User
-        .authenticate(user.email, '1234567890')
+        .authenticate(user.email, user.password)
         .then((authenticatedUser) => {
           expect(authenticatedUser).to.be.an('object');
           expect(authenticatedUser.email).to.be.equal(user.email);

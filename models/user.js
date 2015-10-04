@@ -62,6 +62,7 @@ UserSchema.plugin(mongooseRole, {
     'authenticated': ['admin', 'member'],
     'admin': ['admin']
   },
+  defaultRole: 'member',
   rolePath: 'role',
   roleStaticPath: 'roles',
   accessLevelStaticPath: 'accessLevels',
@@ -80,6 +81,7 @@ UserSchema.plugin(mongooseUpdatedAt, {
  * @return {Object}
  */
 const PUBLIC_FIELDS = [
+  'id',
   'email',
   'role',
   'createdAt',
@@ -87,6 +89,7 @@ const PUBLIC_FIELDS = [
 ];
 UserSchema.method('toJSON', function () {
   let obj = this.toObject();
+  obj.id = obj._id;
   return PUBLIC_FIELDS.reduce((user, field) => {
     user[field] = obj[field];
     return user;

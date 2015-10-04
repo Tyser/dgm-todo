@@ -15,6 +15,7 @@ import connectRedis from 'connect-redis';
 import trailblazer from 'trailblazer';
 import auth from './middleware/auth';
 import {notFound, errors} from './middleware/errors';
+import stripArray from './middleware/strip-array';
 
 const SECURE_SESSIONS = config.get('session.secure');
 const PORT = config.get('port');
@@ -44,6 +45,7 @@ app.set('trust proxy', SECURE_SESSIONS);
 app.use(cors());
 app.use(compression());
 app.use(json());
+app.use(stripArray());
 app.use(session({
   cookie: {
     path: '/',
@@ -74,5 +76,4 @@ app.use(errors());
 mongoose.connect(config.get('mongo.url'));
 
 export default server.start()
-  .then(() => console.log(`Server started on port ${PORT}`))
-  .catch((err) => console.error('Error starting server:', err.stack));
+  .then(() => console.log(`Server started on port ${PORT}`));

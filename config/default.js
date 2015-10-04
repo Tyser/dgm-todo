@@ -14,7 +14,7 @@ module.exports = {
     url: 'redis://127.0.0.1:6379'
   },
   mongo: {
-    url: 'mongodb://127.0.0.1:27017/dgm-todo'
+    url: 'mongodb://127.0.0.1:27017/dgm-todo-test'
   },
   user: {
     saltWorkFactor: 12,

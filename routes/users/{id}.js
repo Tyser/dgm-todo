@@ -3,8 +3,11 @@
 import User from '../../models/user';
 import {authorize} from '../../middleware/auth';
 import notFound from '../../lib/not-found';
+import {ForbiddenError} from '../../lib/errors';
 
-let isSelf = authorize('admin', (req) => req.user.id === req.params.id);
+let isSelf = authorize('admin', (req) => {
+  return req.user.id === req.params.id;
+});
 
 export let route = {
 
@@ -16,37 +19,41 @@ export let route = {
         .then(notFound('User was not found'))
         .then((user) => {
           res.status(200).json(user);
-        })
-        .catch(next);
+        }, next);
     }
   ],
 
   put: [
     isSelf,
     (req, res, next) => {
-      if (req.user.role !== 'admin') {
-        delete req.body.role;
+      if (req.user.role !== 'admin' && req.body.role) {
+        return next(
+          new ForbiddenError('You do not have access to change your role')
+        );
       }
       User
-        .findByIdAndUpdate(req.params.id, req.body)
+        .findByIdAndUpdate(req.params.id, req.body, {new: true})
         .then(notFound('User was not found'))
         .then((user) => {
           res.status(200).json(user);
-        })
-        .catch(next);
+        }, next);
     }
   ],
 
   delete: [
     authorize('admin'),
     (req, res, next) => {
+      if (req.params.id === req.user.id) {
+        return next(
+          new ForbiddenError('You cannot delete yourself as a user')
+        );
+      }
       User
         .findByIdAndRemove(req.params.id)
         .then(notFound('User was not found'))
         .then(() => {
           res.sendStatus(204);
-        })
-        .catch(next);
+        }, next);
     }
   ]
 

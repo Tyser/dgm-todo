@@ -43,15 +43,15 @@ let UserSchema = new Schema({
 UserSchema.plugin(mongoosePassword, {
   path: 'password',
   auth: 'authenticate',
-  workFactor: config.get('user.saltWorkFactor')
+  workFactor: parseInt(config.get('user.saltWorkFactor'), 10)
 });
 UserSchema.plugin(mongooseLock, {
   attemptsPath: 'attempts',
   lockUntilPath: 'lockUntil',
   isLockedPath: 'isLocked',
   incMethod: 'incAttempts',
-  maxAttempts: config.get('user.maxLoginAttempts'),
-  lockTime: config.get('user.lockTime')
+  maxAttempts: parseInt(config.get('user.maxLoginAttempts'), 10),
+  lockTime: parseInt(config.get('user.lockTime'), 10)
 });
 UserSchema.plugin(mongooseRole, {
   roles: [

@@ -4,7 +4,7 @@ import Todo from '../../../../models/todo';
 import {authorize} from '../../../../middleware/auth';
 import notFound from '../../../../lib/not-found';
 
-let isSelf = authorize('user', (req) => {
+let isSelf = authorize(null, (req) => {
   return req.user.id === req.params.userId;
 });
 

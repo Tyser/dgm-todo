@@ -3,7 +3,7 @@
 import Todo from '../../../models/todo';
 import {authorize} from '../../../middleware/auth';
 
-let isSelf = authorize('user', (req) => {
+let isSelf = authorize(null, (req) => {
   return req.user.id === req.params.userId;
 });
 

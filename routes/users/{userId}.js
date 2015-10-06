@@ -6,7 +6,7 @@ import notFound from '../../lib/not-found';
 import {ForbiddenError} from '../../lib/errors';
 
 let isSelf = authorize('admin', (req) => {
-  return req.user.id === req.params.id;
+  return req.user.id === req.params.userId;
 });
 
 export let route = {
@@ -15,7 +15,7 @@ export let route = {
     isSelf,
     (req, res, next) => {
       User
-        .findById(req.params.id)
+        .findById(req.params.userId)
         .then(notFound('User was not found'))
         .then((user) => {
           res.status(200).json(user);
@@ -32,7 +32,7 @@ export let route = {
         );
       }
       User
-        .findByIdAndUpdate(req.params.id, req.body, {new: true})
+        .findByIdAndUpdate(req.params.userId, req.body, {new: true})
         .then(notFound('User was not found'))
         .then((user) => {
           res.status(200).json(user);
@@ -43,13 +43,13 @@ export let route = {
   delete: [
     authorize('admin'),
     (req, res, next) => {
-      if (req.params.id === req.user.id) {
+      if (req.params.userId === req.user.id) {
         return next(
           new ForbiddenError('You cannot delete yourself as a user')
         );
       }
       User
-        .findByIdAndRemove(req.params.id)
+        .findByIdAndRemove(req.params.userId)
         .then(notFound('User was not found'))
         .then(() => {
           res.sendStatus(204);

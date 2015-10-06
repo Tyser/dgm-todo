@@ -10,6 +10,10 @@ let TodoSchema = new Schema({
     type: String,
     required: true
   },
+  tags: {
+    type: [String],
+    index: true
+  },
   completed: {
     type: Boolean,
     default: false,

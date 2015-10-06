@@ -59,7 +59,7 @@ UserSchema.plugin(mongooseRole, {
     'member'
   ],
   accessLevels: {
-    'authenticated': ['admin', 'member'],
+    'user': ['admin', 'member'],
     'admin': ['admin']
   },
   defaultRole: 'member',

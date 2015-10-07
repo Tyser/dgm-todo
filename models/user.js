@@ -97,16 +97,6 @@ UserSchema.method('toJSON', function () {
 });
 
 /**
- * @function User.clean
- * @param {User} editingUser - The editing user
- * @param {Object}
- * @return {Object}
- */
-UserSchema.static('clean', function (editingUser) {
-
-});
-
-/**
  * @function User.authenticate
  * @param {String} email
  * @param {String} password

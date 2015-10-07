@@ -5,6 +5,7 @@ import Server from 'hyperbole';
 import config from 'config';
 import redisUrl from 'redis-url';
 import mongoose from 'mongoose';
+import docs from './docs';
 
 // Middleware
 import cors from 'cors';
@@ -13,6 +14,7 @@ import compression from 'compression';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
 import trailblazer from 'trailblazer';
+import trailblazerSwagger from 'trailblazer-swagger';
 import auth from './middleware/auth';
 import {notFound, errors} from './middleware/errors';
 import stripArray from './middleware/strip-array';
@@ -32,6 +34,7 @@ let RedisStore = connectRedis(session);
 let trailblaze = trailblazer('routes', {
   cwd: __dirname
 });
+let swagger = trailblaze.plugin(trailblazerSwagger);
 
 export let app = express();
 export let server = new Server(app, PORT);
@@ -45,6 +48,7 @@ app.set('trust proxy', SECURE_SESSIONS);
 app.use(cors());
 app.use(compression());
 app.use(json());
+app.use(urlencoded({extended: true}));
 app.use(stripArray());
 app.use(session({
   cookie: {
@@ -68,7 +72,7 @@ app.use(session({
   })
 }));
 app.use(auth());
-app.use(urlencoded({extended: true}));
+app.use(swagger({docs}));
 app.use(trailblaze.routes());
 app.use(notFound());
 app.use(errors());

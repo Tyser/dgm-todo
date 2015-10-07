@@ -13,6 +13,9 @@ let TodoSchema = new Schema({
     type: String,
     required: true
   },
+  description: {
+    type: String
+  },
   tags: {
     type: [String],
     index: true
@@ -26,6 +29,9 @@ let TodoSchema = new Schema({
     type: Boolean,
     default: false,
     index: true
+  },
+  priority: {
+    type: Number
   },
   order: {
     type: Number,
@@ -52,9 +58,12 @@ TodoSchema.plugin(mongooseUpdatedAt, {
 const PUBLIC_FIELDS = [
   'id',
   'name',
+  'description',
   'tags',
   'completed',
   'archived',
+  'order',
+  'dueDate',
   'owner'
 ];
 TodoSchema.method('toJSON', function () {

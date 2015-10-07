@@ -15,6 +15,7 @@ export let route = {
       Todo
         .find({owner: req.user.id})
         .sort({order: 1})
+        .sort({priority: -1})
         .then((todos) => {
           res.status(200).json(todos);
         }, next);

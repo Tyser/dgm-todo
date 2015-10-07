@@ -41,7 +41,8 @@
     "passport": "^0.3.0",
     "passport-local": "^1.0.0",
     "redis-url": "^1.2.1",
-    "trailblazer": "^2.0.0"
+    "trailblazer": "^2.0.0",
+    "trailblazer-swagger": "^1.0.2"
   },
   "devDependencies": {
     "chai": "^3.2.0",
